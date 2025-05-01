@@ -50,7 +50,7 @@ public class UsingLinkedEnqueuer {
     } while (k < 40);
 
     for (int i = 0; i < 40; i++) {
-      result.add(q.remove());
+      result.add(q.poll());
     }
 
     System.out.println(result);

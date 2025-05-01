@@ -31,21 +31,21 @@
     </p>
     <p>
         API:
+    </p>
     <ul>
         <li>
             POST /queue -> queueId
         </li>
         <li>
-            GET /polling/:id/ -> nextVal
+            POST /queue/:id/add/:value -> null
         </li>
         <li>
-            POST /queue/:id/addition -> null
+            GET /queue/:id/poll -> nextVal
         </li>
         <li>
             DELETE /queue/:id -> null
         </li>
     </ul>
-    </p>
     <p>
         URL: sunfish-sacred-dogfish.ngrok-free.app
     </p>

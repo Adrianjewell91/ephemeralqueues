@@ -22,14 +22,14 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class QueueCollection {
   public static final String                        QUEUE_NOT_FOUND_MESSAGE    = "Queue not found.";
   public static final String                        COLLECTION_IS_FULL_MESSAGE = "Collection is Full.";
-  public static final int                           DEFAULT_SIZE               = 100_000;
+  public static final int                           DEFAULT_SIZE               = 100;
   private             int                           nextQueueId                = 0;
 
-  private final       int                           maxQueueLength;
+  private final       int queueCapacity;
   private final       Queue<Integer>[]              collection;
 
-  public QueueCollection(int maxCollectionSize, int maxQueueLength) {
-    this.maxQueueLength = maxQueueLength;
+  public QueueCollection(int maxCollectionSize, int queueCapacity) {
+    this.queueCapacity  = queueCapacity;
     this.collection     = new ArrayBlockingQueue[maxCollectionSize];
   }
 
@@ -39,7 +39,7 @@ public class QueueCollection {
 
   public QueueId createQueue() throws IllegalStateException {
     int i         = getNewQueueId();
-    collection[i] = new ArrayBlockingQueue<>(maxQueueLength);
+    collection[i] = new ArrayBlockingQueue<>(queueCapacity);
 
     return new QueueId(i);
   }
@@ -78,5 +78,17 @@ public class QueueCollection {
     }
 
     return nextQueueId++;
+  }
+
+  public Queue<Integer> get(int i) {
+    return collection[i];
+  }
+
+  public int size() {
+    return collection.length;
+  }
+
+  public int queueCapacity() {
+    return queueCapacity;
   }
 }

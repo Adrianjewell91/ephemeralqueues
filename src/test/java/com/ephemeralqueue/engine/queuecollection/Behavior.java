@@ -12,34 +12,43 @@ import java.util.Random;
 import static com.ephemeralqueue.engine.queuecollection.Performance.createQueues;
 
 class Behavior {
-
-  public static final int QUEUE_CAPACITY = 100;
-
   @Test
   public void main() throws InterruptedException {
-    singleQueue();
-    manyQueuesCreationPreThreads();
-    collectionFull();
-    deleteTwice();
-    queueCreationIdsIsMonotonic();
+//    while (true) {
+      singleQueue();
+      manyQueuesCreationPreThreads();
+      collectionFull();
+      deleteTwice();
+      queueCreationIdsIsMonotonic();
+//    }
+
+//    int[][] memory = new int[20_000][20_000];
+//
+//    while (true) {
+//      for (int i = 0; i < 20000; i++) {
+//        for (int j = 0; j < 20000; j++) {
+//          memory[i][j] = i;
+//        }
+//      }
+//    }
   }
 
   public static void singleQueue() {
-    QueueCollection queueCollection = new QueueCollection(1, QUEUE_CAPACITY);
+    QueueCollection queueCollection = getQueueCollection();
 
     QueueId q = queueCollection.createQueue();
 
-    Shared.testCompleteAddAndRemove(queueCollection, q.id(), QUEUE_CAPACITY);
+    Shared.testCompleteAddAndRemove(queueCollection.get(q.id()), QueueCollection.DEFAULT_SIZE);
   }
 
   public static void manyQueuesCreationPreThreads() throws InterruptedException {
-    QueueCollection queueCollection = new QueueCollection(QUEUE_CAPACITY, QUEUE_CAPACITY);
+    QueueCollection queueCollection = getQueueCollection();
 
-    createQueues(QUEUE_CAPACITY, queueCollection);
+    createQueues(QueueCollection.DEFAULT_SIZE, queueCollection);
 
     List<Thread> threads = new ArrayList<>();
 
-    for (int i = 0; i < QUEUE_CAPACITY; i++) {
+    for (int i = 0; i < QueueCollection.DEFAULT_SIZE; i++) {
       Thread thread = new QueueClient(i, queueCollection);
       threads.add(thread);
     }
@@ -82,16 +91,22 @@ class Behavior {
     }
 
     public void run() {
-      Shared.testCompleteAddAndRemove(queueCollection, queueId, QUEUE_CAPACITY);
+      Shared.testCompleteAddAndRemove(queueCollection.get(queueId), QueueCollection.DEFAULT_SIZE);
     }
   }
 
   public static void collectionFull() {
-    QueueCollection queueCollection = new QueueCollection(10, QueueCollection.DEFAULT_SIZE);
+    QueueCollection queueCollection = getQueueCollection();
 
-    for (int i = 0; i < 10; i++) {
-      queueCollection.createQueue();
-    }
+//    try {
+      for (int i = 0; i < QueueCollection.DEFAULT_SIZE; i++) {
+//        long before = Runtime.getRuntime().freeMemory();
+        queueCollection.createQueue();
+//        System.out.println(before - Runtime.getRuntime().freeMemory());
+      }
+//    } catch (Exception e) {
+//      System.out.println(Runtime.getRuntime().freeMemory());
+//    }
 
     try {
       queueCollection.createQueue();
@@ -102,7 +117,7 @@ class Behavior {
   }
 
   public static void queueCreationIdsIsMonotonic() {
-    QueueCollection queueCollection = new QueueCollection(QueueCollection.DEFAULT_SIZE, QueueCollection.DEFAULT_SIZE);
+    QueueCollection queueCollection = getQueueCollection();
 
     QueueId id1 = queueCollection.createQueue();
     QueueId id2 = queueCollection.createQueue();
@@ -122,7 +137,7 @@ class Behavior {
   }
 
   public static void deleteTwice() {
-    QueueCollection queueCollection = new QueueCollection();
+    QueueCollection queueCollection = getQueueCollection();
 
     QueueId q = queueCollection.createQueue();
 
@@ -132,5 +147,9 @@ class Behavior {
     queueCollection.deleteQueue(q.id());
 
     Shared.assertTrue(true);
+  }
+
+  private static QueueCollection getQueueCollection() {
+    return new QueueCollection();
   }
 }
