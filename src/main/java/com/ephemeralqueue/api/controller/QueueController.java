@@ -19,9 +19,9 @@ public class QueueController {
   public QueueController() {
 
     this.queueCollection = new QueueCollection();
-    for (int i = QueueCollection.DEFAULT_SIZE; i > 0; i--) {
-      this.queueCollection.createQueue();
-    }
+//    for (int i = QueueCollection.DEFAULT_SIZE; i > 0; i--) {
+//      this.queueCollection.createQueue();
+//    }
   }
 
   @PostMapping("/test")
@@ -45,12 +45,14 @@ public class QueueController {
   @PostMapping("/queue/{id}/add/{value}")
   public boolean add(@PathVariable int id,
                      @PathVariable int value) {
+//    System.out.println(Thread.currentThread().getName());
     return queueCollection.add(id, value);
   }
 
   @GetMapping("/queue/{id}/poll")
   public Integer poll(@PathVariable int id) {
 //    counter.getAndIncrement();
+//    System.out.println(Thread.currentThread().getName());
     return queueCollection.poll(id).value();
   }
 

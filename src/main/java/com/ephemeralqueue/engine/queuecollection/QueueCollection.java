@@ -6,6 +6,7 @@ import com.ephemeralqueue.engine.queuecollection.entities.QueueValue;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Manages a collection of ephemeral queues.
@@ -22,7 +23,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class QueueCollection {
   public static final String                        QUEUE_NOT_FOUND_MESSAGE    = "Queue not found.";
   public static final String                        COLLECTION_IS_FULL_MESSAGE = "Collection is Full.";
-  public static final int                           DEFAULT_SIZE               = 100;
+  public static final int                           DEFAULT_SIZE               = 1000;
   private             int                           nextQueueId                = 0;
 
   private final       int queueCapacity;
@@ -30,7 +31,8 @@ public class QueueCollection {
 
   public QueueCollection(int maxCollectionSize, int queueCapacity) {
     this.queueCapacity  = queueCapacity;
-    this.collection     = new ArrayBlockingQueue[maxCollectionSize];
+//    this.collection     = new ArrayBlockingQueue[maxCollectionSize];
+    this.collection     = new ConcurrentLinkedQueue[maxCollectionSize];
   }
 
   public QueueCollection() {
@@ -39,7 +41,8 @@ public class QueueCollection {
 
   public QueueId createQueue() throws IllegalStateException {
     int i         = getNewQueueId();
-    collection[i] = new ArrayBlockingQueue<>(queueCapacity);
+//    collection[i] = new ArrayBlockingQueue<>(queueCapacity);
+    collection[i] = new ConcurrentLinkedQueue<>();
 
     return new QueueId(i);
   }
@@ -49,6 +52,7 @@ public class QueueCollection {
   }
 
   public boolean add(int queueId, int val) throws NoSuchElementException, IllegalStateException {
+    System.out.println(Thread.currentThread().getName());
     checkIsQueue(queueId);
     return collection[queueId].add(val);
   }
@@ -61,6 +65,7 @@ public class QueueCollection {
    * @return
    */
   public QueueValue poll(int queueId) {
+    System.out.println(Thread.currentThread().getName());
     return new QueueValue(
         collection[queueId] == null ? null : collection[queueId].poll()
     );
@@ -72,7 +77,7 @@ public class QueueCollection {
     }
   }
 
-  private int getNewQueueId() throws IllegalStateException {
+  private synchronized int getNewQueueId() throws IllegalStateException {
     if (nextQueueId >= collection.length) {
       throw new IllegalStateException(COLLECTION_IS_FULL_MESSAGE);
     }

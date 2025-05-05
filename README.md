@@ -23,7 +23,7 @@ https://unix.stackexchange.com/questions/103920/parallelize-a-bash-for-loop
 
 N=10
 (
-for i in {1..5000}; do ((i=i%N)); ((i++==0)) && wait; curl --location --request POST 'localhost:8080/queue' &; done
+for i in {1..100}; do ((i=i%N)); ((i++==0)) && wait; curl --location --request POST 'localhost:8080/queue' &; done
 )
 
 
@@ -33,10 +33,20 @@ for i in {0..99}; do curl --location --request POST 'localhost:8080/queue/'$j'/a
 
 done 
 
+
 for j in {0..99}; do
 
 for i in {0..99}; do curl --location --request GET 'localhost:8080/queue/'$j'/poll'; done &
 
+done
+
+https://unix.stackexchange.com/questions/704056/how-might-i-execute-this-nested-for-loop-in-parallel
+
+for j in {0..99}; do
+(
+for i in {0..99}; do curl --location --request POST 'localhost:8080/queue/'$j'/add/'$i; done
+for i in {0..99}; do curl --location --request GET 'localhost:8080/queue/'$j'/poll'; done
+) &
 done
 
 
