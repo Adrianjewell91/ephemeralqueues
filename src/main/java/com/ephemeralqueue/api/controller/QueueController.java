@@ -14,14 +14,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RestController
 public class QueueController {
   private final QueueCollection queueCollection;
-//  private final AtomicInteger counter = new AtomicInteger(0);
 
   public QueueController() {
-
     this.queueCollection = new QueueCollection();
-//    for (int i = QueueCollection.DEFAULT_SIZE; i > 0; i--) {
-//      this.queueCollection.createQueue();
-//    }
+    createQueues();
+  }
+
+  private void createQueues() {
+    for (int i = QueueCollection.DEFAULT_SIZE; i > 0; i--) {
+      this.queueCollection.createQueue();
+    }
   }
 
   @PostMapping("/test")
@@ -37,7 +39,6 @@ public class QueueController {
 
   @PostMapping("/queue")
   public int create() {
-//    counter.getAndIncrement();
     QueueId id = queueCollection.createQueue();
     return id.id();
   }
@@ -45,14 +46,11 @@ public class QueueController {
   @PostMapping("/queue/{id}/add/{value}")
   public boolean add(@PathVariable int id,
                      @PathVariable int value) {
-//    System.out.println(Thread.currentThread().getName());
     return queueCollection.add(id, value);
   }
 
   @GetMapping("/queue/{id}/poll")
   public Integer poll(@PathVariable int id) {
-//    counter.getAndIncrement();
-//    System.out.println(Thread.currentThread().getName());
     return queueCollection.poll(id).value();
   }
 

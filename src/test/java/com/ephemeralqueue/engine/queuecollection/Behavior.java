@@ -22,6 +22,7 @@ class Behavior {
       queueCreationIdsIsMonotonic();
 //    }
 
+    // This I was playing with to understand memory.
 //    int[][] memory = new int[20_000][20_000];
 //
 //    while (true) {

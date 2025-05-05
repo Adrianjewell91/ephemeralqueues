@@ -13,10 +13,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  *
  * Question: Which parts of this implementation are not thread safe?
  *
- * 1. checkQueueExistence()
- * 2. getNewQueueId()
+ * 1. checkIsQueue() - because the queue could not be there, then it could be there but the method still throws exception.
+ * 2. getNewQueueId() - this was made thread safe using synchronized.
  * 3. deleteQueue is interesting because it just deletes queues, but something could get put in there afterward.
- *
  *  ... so basically all accessing and managing the queue collection.
  *
  */
@@ -52,7 +51,6 @@ public class QueueCollection {
   }
 
   public boolean add(int queueId, int val) throws NoSuchElementException, IllegalStateException {
-    System.out.println(Thread.currentThread().getName());
     checkIsQueue(queueId);
     return collection[queueId].add(val);
   }
@@ -65,7 +63,6 @@ public class QueueCollection {
    * @return
    */
   public QueueValue poll(int queueId) {
-    System.out.println(Thread.currentThread().getName());
     return new QueueValue(
         collection[queueId] == null ? null : collection[queueId].poll()
     );
